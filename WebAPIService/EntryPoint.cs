@@ -5,9 +5,9 @@ using System.Text;
 
 namespace WebAPIService
 {
-    class Program
+    class EntryPoint
     {
-        static void Main(string[] args)
+        static void Main()
         {
         }
     }
