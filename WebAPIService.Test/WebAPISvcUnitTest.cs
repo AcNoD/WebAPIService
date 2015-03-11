@@ -27,7 +27,7 @@ namespace WebAPIService.Test
             const string xml = @"text/xml; charset=utf-8";
 
             var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:9900/DocumentService/GetDocument");
-            httpWebRequest.ContentType = xml;
+            httpWebRequest.ContentType = json;
             httpWebRequest.Method = "GET";
 
             var str = httpWebRequest.ToString();
