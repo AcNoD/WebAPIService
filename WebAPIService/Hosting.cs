@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.ServiceModel.Web;
 using System.Text;
 
 namespace WebAPIService
@@ -10,7 +11,7 @@ namespace WebAPIService
     /// <summary>
     /// Self hosting for WCF and WebAPI services
     /// </summary>
-    class Hosting
+    public class Hosting
     {
         /// <summary>
         /// Host services
@@ -22,7 +23,7 @@ namespace WebAPIService
             using (var host = new ServiceHost(typeof(DocumentService), httpBaseAddress))
             {
                 // add endpoint
-                host.AddServiceEndpoint(typeof (IDocumentService), new WSHttpBinding(), string.Empty);
+                host.AddServiceEndpoint(typeof(IDocumentService), new WebHttpBinding(), string.Empty);
                 
                 // create behavior
                 var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true};
@@ -34,8 +35,20 @@ namespace WebAPIService
                 host.Open();
 
                 Console.WriteLine("WCF Service {0} is opened", typeof(IDocumentService));
-
                 Console.ReadKey();
+            }
+        }
+
+        public static void Host2()
+        {
+            using (var host = new WebServiceHost(typeof (DocumentService), new Uri("http://localhost:47863/")))
+            {
+                host.AddServiceEndpoint(typeof (IDocumentService), new WebHttpBinding(), "");
+                var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
+                sdb.HttpHelpPageEnabled = false;
+                host.Open();
+
+                Console.WriteLine("WCF Service {0} is opened", typeof(IDocumentService));
             }
         }
     }

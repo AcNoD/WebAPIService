@@ -9,7 +9,7 @@ namespace WebAPIService
         {
             var document = new Document
             {
-                Name = "Doc1",
+                Name = "Doc_" + id,
                 CreationDate = DateTime.Now,
                 Content = "Document text content"
             };

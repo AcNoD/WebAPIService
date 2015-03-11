@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace WebAPIService
 {
@@ -9,7 +10,8 @@ namespace WebAPIService
     {
         static void Main()
         {
-            Hosting.Host();
+            var task = Task.Factory.StartNew(Hosting.Host);
+            task.Wait(50000);
         }
     }
 }
