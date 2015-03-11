@@ -9,6 +9,7 @@ namespace WebAPIService
     {
         static void Main()
         {
+            Hosting.Host();
         }
     }
 }
