@@ -1,4 +1,5 @@
 ﻿using System.ServiceModel;
+using System.ServiceModel.Web;
 using Model;
 
 namespace WebAPIService
@@ -6,7 +7,8 @@ namespace WebAPIService
     [ServiceContract]
     interface IDocumentService
     {
+        [WebGet]
         [OperationContract]
-        Document GetDocument(long id);
+        Document GetDocument();
     }
 }

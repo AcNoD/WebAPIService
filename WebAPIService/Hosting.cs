@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Configuration;
 using System.ServiceModel.Description;
 using System.ServiceModel.Web;
 using System.Text;
@@ -18,15 +19,17 @@ namespace WebAPIService
         /// </summary>
         public static void Host()
         {
-            var httpBaseAddress = new Uri("http://localhost:47863/DocumentService");
+            var httpBaseAddress = new Uri("http://localhost:9900/DocumentService");
 
             using (var host = new ServiceHost(typeof(DocumentService), httpBaseAddress))
             {
                 // add endpoint
-                host.AddServiceEndpoint(typeof(IDocumentService), new WebHttpBinding(), string.Empty);
-                
+                var ep = host.AddServiceEndpoint(typeof(IDocumentService), new WebHttpBinding(), string.Empty);
+                //var epB = new 
+                ep.Behaviors.Add(new WebHttpBehavior());
                 // create behavior
-                var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true};
+                var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true };
+                
                 
                 // add behavior to host
                 host.Description.Behaviors.Add(behavior);
@@ -41,7 +44,7 @@ namespace WebAPIService
 
         public static void Host2()
         {
-            using (var host = new WebServiceHost(typeof (DocumentService), new Uri("http://localhost:47863/")))
+            using (var host = new WebServiceHost(typeof(DocumentService), new Uri("http://localhost:9900/")))
             {
                 host.AddServiceEndpoint(typeof (IDocumentService), new WebHttpBinding(), "");
                 var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
