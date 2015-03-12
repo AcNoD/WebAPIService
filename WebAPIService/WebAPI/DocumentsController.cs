@@ -8,9 +8,9 @@ namespace WebAPIService.WebAPI
     {
         readonly Document[] _documents = new []  
         {  
-            new Document { Id = 1, Name = "DocOne", Content = "ContentOne"},  
-            new Document { Id = 2, Name = "DocTwo", Content = "ContentTwo" },  
-            new Document { Id = 3, Name = "DocThree", Content = "ContentThree" }  
+            new Document { Id = 1, Name = "DocOne", MyContent = "ContentOne"},  
+            new Document { Id = 2, Name = "DocTwo", MyContent = "ContentTwo" },  
+            new Document { Id = 3, Name = "DocThree", MyContent = "ContentThree" }  
         };
 
         public IEnumerable<Document> GetAllDocuments()

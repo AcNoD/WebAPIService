@@ -4,8 +4,7 @@ using System.Runtime.Serialization;
 namespace Model
 {
 
-    //[DataContract(Namespace = "http://www.test.com/Docns")]
-    [DataContract]
+    [DataContract(Namespace = "http://tempuri.org/")]
     public class Document
     {
         [DataMember]
@@ -14,10 +13,7 @@ namespace Model
         [DataMember]
         public string Name { get; set; }
 
-        /*[DataMember]
-        public DateTime CreationDate { get; set; }*/
-
         [DataMember]
-        public string Content { get; set; }
+        public string MyContent { get; set; }
     }
 }

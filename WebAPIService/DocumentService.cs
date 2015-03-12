@@ -13,7 +13,7 @@ namespace WebAPIService
             {
                 Name = "Doc_" + 100,
                 //CreationDate = DateTime.Now,
-                Content = "Document text content"
+                MyContent = "Document text content"
             };
 
             return document;
@@ -21,7 +21,7 @@ namespace WebAPIService
 
         public long AddDocument(Document document)
         {
-            return document.Id;
+            return 155;
         }
 
         public string AddSimple(string document)

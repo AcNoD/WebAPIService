@@ -50,7 +50,7 @@ namespace WebAPIService.Test
                 {
                     Id = 1001,
                     Name = "NewDocument",
-                    Content = "new test doc content"
+                    MyContent = "new test doc content"
                 };
 
             var serializer = new JavaScriptSerializer();
@@ -74,12 +74,12 @@ namespace WebAPIService.Test
             {
                 Id = 1001,
                 Name = "NewDocument",
-                Content = "new test doc content"
+                MyContent = "new test doc content"
             };
 
             //var xmlString = SerializeToXml(document);
             //var xmlString = "<AddDocument xmlns=\"http://tempuri.org/\"><Document xmlns=\"http://www.test.com/Docns\"><Id>1001</Id><Name>NewDocument</Name><Content>new test doc content</Content></Document></AddDocument>";
-            var xmlString = "<AddDocument xmlns=\"http://tempuri.org/\"><document><Id>1001</Id><Name>NewDocument</Name><Content>new test doc content</Content></document></AddDocument>";
+            var xmlString = "<AddDocument xmlns=\"http://tempuri.org/\"><document xmlns=\"http://tempuri.org/\"><MyContent>newdsaf</MyContent><Name>NewDocument</Name><Id>1001</Id></document></AddDocument>";
             Trace.WriteLine(xmlString);
             var encoding = new ASCIIEncoding();
             var data = encoding.GetBytes(xmlString);
