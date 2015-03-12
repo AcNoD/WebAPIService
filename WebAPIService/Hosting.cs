@@ -2,6 +2,8 @@
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Web.Configuration;
+using System.Web.Http;
+using System.Web.Http.SelfHost;
 
 namespace WebAPIService
 {
@@ -10,6 +12,19 @@ namespace WebAPIService
     /// </summary>
     public class Hosting
     {
+        public static HttpSelfHostServer WebApiSelfHost()
+        {
+            var config = new HttpSelfHostConfiguration("http://localhost:8080");
+
+            config.Routes.MapHttpRoute("API Default", "api/{controller}/{id}", new { id = RouteParameter.Optional });
+
+            var host = new HttpSelfHostServer(config);
+
+            host.OpenAsync().Wait();
+
+            return host;
+        }
+
         public static ServiceHost WcfSelfHost()
         {
             // create host

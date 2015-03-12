@@ -31,5 +31,15 @@ namespace WebAPIService.Test
 
             host.Close();
         }
+        
+        [TestMethod]
+        public void Test()
+        {
+            var host = Hosting.WebApiSelfHost();
+
+            Trace.WriteLine(WebInvoker.Invoke("http://localhost:8080/api/documents", RequestMethodType.GET, ResponseFormat.JSON));
+
+            host.CloseAsync().Wait();
+        }
     }
 }
