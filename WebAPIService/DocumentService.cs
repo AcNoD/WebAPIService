@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 using Model;
 
 namespace WebAPIService
@@ -7,6 +8,7 @@ namespace WebAPIService
     [ServiceBehavior(AddressFilterMode = AddressFilterMode.Any)] 
     class DocumentService : IDocumentService
     {
+        [WebGet(BodyStyle = WebMessageBodyStyle.WrappedRequest, ResponseFormat = WebMessageFormat.Json)]
         public Document GetDocument()
         {
             var document = new Document

@@ -53,14 +53,20 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="RequestMethodType.cs" />
+    <Compile Include="ResponseFormat.cs" />
     <Compile Include="WebAPISvcUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebInvoker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebAPIService\WebAPIService.csproj">
       <Project>{062cf1ae-17ed-4bbb-8d9f-ef99245c29e8}</Project>
       <Name>WebAPIService</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

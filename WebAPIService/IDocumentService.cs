@@ -7,7 +7,7 @@ namespace WebAPIService
     [ServiceContract]
     interface IDocumentService
     {
-        [WebGet]
+        [WebGet(BodyStyle = WebMessageBodyStyle.WrappedRequest, ResponseFormat = WebMessageFormat.Json)]
         [OperationContract]
         Document GetDocument();
     }

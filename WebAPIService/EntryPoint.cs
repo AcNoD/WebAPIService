@@ -10,7 +10,7 @@ namespace WebAPIService
     {
         static void Main()
         {
-            var task = Task.Factory.StartNew(Hosting.Host);
+            var task = Task.Factory.StartNew(Hosting.Host3);
             task.Wait(50000);
         }
     }

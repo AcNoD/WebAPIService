@@ -54,5 +54,17 @@ namespace WebAPIService
                 Console.WriteLine("WCF Service {0} is opened", typeof(IDocumentService));
             }
         }
+
+        public static void Host3()
+        {
+            var httpBaseAddress = new Uri("http://localhost:9901/DocumentService");
+
+            using (var host = new ConfigurableServiceHost(typeof(DocumentService), httpBaseAddress))
+            //using (var host = new ConfigurableServiceHost())
+            {
+                host.Open();
+                Console.ReadKey();
+            }
+        }
     }
 }

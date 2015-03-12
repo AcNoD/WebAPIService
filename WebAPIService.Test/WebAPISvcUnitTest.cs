@@ -1,9 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
+﻿using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebAPIService.Test
@@ -11,37 +7,27 @@ namespace WebAPIService.Test
     [TestClass]
     public class WebAPISvcUnitTest
     {
+        private const string address = "http://localhost:9901/DocumentService/GetDocument";
+
         [TestMethod]
-        public void TestMethod1()
+        public void InvokeWebMethod_XML()
         {
-            var thread = new Thread(Hosting.Host);
-            thread.Start();
-            Thread.Sleep(5000);
-            Trace.WriteLine(InvokeJsonWebMethod());
-            thread.Abort();
+            InvokeWebMethod(ResponseFormat.XML);
         }
 
-        static string InvokeJsonWebMethod()
+        [TestMethod]
+        public void InvokeWebMethod_JSON()
         {
-            const string json = @"application/json; charset=utf-8";
-            const string xml = @"text/xml; charset=utf-8";
+            InvokeWebMethod(ResponseFormat.JSON);
+        }
 
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:9900/DocumentService/GetDocument");
-            httpWebRequest.ContentType = xml;
-            httpWebRequest.Method = "GET";
-
-            var str = httpWebRequest.ToString();
-            var responseText = "";
-            /*using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {
-               streamWriter.Write("34");//any parameter
-            }*/
-            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-            {
-                responseText = streamReader.ReadToEnd();
-            }
-            return responseText;
+        public void InvokeWebMethod(ResponseFormat responseFormat)
+        {
+            var thread = new Thread(Hosting.Host3);
+            thread.Start();
+            Thread.Sleep(5000);
+            Trace.WriteLine(WebInvoker.Invoke(address, RequestMethodType.GET, responseFormat));
+            thread.Abort();
         }
     }
 }
