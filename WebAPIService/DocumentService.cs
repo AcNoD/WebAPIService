@@ -1,24 +1,32 @@
 ﻿using System;
 using System.ServiceModel;
-using System.ServiceModel.Web;
 using Model;
 
 namespace WebAPIService
 {
     [ServiceBehavior(AddressFilterMode = AddressFilterMode.Any)] 
     class DocumentService : IDocumentService
-    {
-        [WebGet(BodyStyle = WebMessageBodyStyle.WrappedRequest, ResponseFormat = WebMessageFormat.Json)]
+    {        
         public Document GetDocument()
         {
             var document = new Document
             {
                 Name = "Doc_" + 100,
-                CreationDate = DateTime.Now,
+                //CreationDate = DateTime.Now,
                 Content = "Document text content"
             };
 
             return document;
+        }
+
+        public long AddDocument(Document document)
+        {
+            return document.Id;
+        }
+
+        public string AddSimple(string document)
+        {
+            return document + " rsp!!!!!";
         }
     }
 }

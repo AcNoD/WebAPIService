@@ -13,10 +13,32 @@ namespace WebAPIService.Test
 
             var responseText = "";
             if (method == RequestMethodType.POST)
+            {
                 using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                 {
                     streamWriter.Write(postContent);
                 }
+            }
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                responseText = streamReader.ReadToEnd();
+            }
+            return responseText;
+        }
+
+        public static string InvokeByte(string address, RequestMethodType method, ResponseFormat fromat, byte[] postContent = null)
+        {
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(address);
+            httpWebRequest.ContentType = GetContentType(fromat);
+            httpWebRequest.Method = method.ToString();
+
+            var responseText = "";
+            if (method == RequestMethodType.POST)
+            {
+                using (var streamWriter = httpWebRequest.GetRequestStream())
+                    streamWriter.Write(postContent, 0, postContent.Length);
+            }
             var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
             {
