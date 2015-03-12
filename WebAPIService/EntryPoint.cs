@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace WebAPIService
 {
@@ -10,7 +6,7 @@ namespace WebAPIService
     {
         static void Main()
         {
-            var task = Task.Factory.StartNew(Hosting.Host3);
+            var task = Task.Factory.StartNew("http://localhost:9901/DocumentService");
             task.Wait(50000);
         }
     }
