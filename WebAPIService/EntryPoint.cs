@@ -6,8 +6,8 @@ namespace WebAPIService
     {
         static void Main()
         {
-            var task = Task.Factory.StartNew("http://localhost:9901/DocumentService");
-            task.Wait(50000);
+            //var task = Task.Factory.StartNew(Hosting.WcfConfigurableSelfHost);
+            //task.Wait(50000);
         }
     }
 }

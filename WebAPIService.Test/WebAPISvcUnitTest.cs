@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Threading;
+using System.Web.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebAPIService.Test
@@ -7,8 +8,6 @@ namespace WebAPIService.Test
     [TestClass]
     public class WebApiSvcUnitTest
     {
-        private const string Address = "http://localhost:9901/DocumentService/GetDocument";
-
         [TestMethod]
         public void InvokeWebMethod_XML()
         {
@@ -22,12 +21,15 @@ namespace WebAPIService.Test
         }
 
         public void InvokeWebMethod(ResponseFormat responseFormat)
-        {
-            var thread = new Thread(Hosting.Host3);
-            thread.Start();
-            Thread.Sleep(5000);
-            Trace.WriteLine(WebInvoker.Invoke(Address, RequestMethodType.GET, responseFormat));
-            thread.Abort();
+        {            
+            var host = Hosting.WcfConfigurableSelfHost();
+
+            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
+            var address = string.Format("http://localhost:{0}/DocumentService/GetDocument", port);
+
+            Trace.WriteLine(WebInvoker.Invoke(address, RequestMethodType.GET, responseFormat));
+
+            host.Close();
         }
     }
 }

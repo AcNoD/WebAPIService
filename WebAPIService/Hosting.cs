@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.Web.Configuration;
 
 namespace WebAPIService
 {
@@ -9,16 +10,17 @@ namespace WebAPIService
     /// </summary>
     public class Hosting
     {
-        public static void WcfSelfHost(string address)
+        public static ServiceHost WcfSelfHost()
         {
             // create host
-            using (var host = new ServiceHost(typeof(DocumentService), new Uri(address)))
-            {
-                // add endpoint
-                var ep = host.AddServiceEndpoint(typeof(IDocumentService), new WebHttpBinding(), string.Empty);                
-                ep.Behaviors.Add(new WebHttpBehavior());
+            var uri = new Uri(GetAddressFromConfig());
+            var host = new ServiceHost(typeof(DocumentService), uri);
 
-                /*var httpEp = new WebHttpEndpoint(ContractDescription.GetContract(typeof(IDocumentService)))
+            // add endpoint
+            var ep = host.AddServiceEndpoint(typeof (IDocumentService), new WebHttpBinding(), string.Empty);
+            ep.Behaviors.Add(new WebHttpBehavior());
+
+            /*var httpEp = new WebHttpEndpoint(ContractDescription.GetContract(typeof(IDocumentService)))
                 {
                     Address = new EndpointAddress(httpBaseAddress),
                     AutomaticFormatSelectionEnabled = true
@@ -26,30 +28,35 @@ namespace WebAPIService
                 };
                 host.AddServiceEndpoint(httpEp);*/
 
-                // create behavior
-                var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true };
-                
-                // add behavior to host
-                host.Description.Behaviors.Add(behavior);
+            // create behavior
+            var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true};
 
-                // open host
-                host.Open();
+            // add behavior to host
+            host.Description.Behaviors.Add(behavior);
 
-                Console.WriteLine("WCF Service {0} is opened", typeof(IDocumentService));
-                Console.ReadKey();
-            }
+            // open host
+            host.Open();
+
+            Console.WriteLine("WCF Service {0} is opened", typeof (IDocumentService));
+            return host;
         }
 
-        public static void WcfConfigurableSelfHost(string address)
+        public static ServiceHost WcfConfigurableSelfHost()
         {
             // create host
-            using (var host = new ConfigurableServiceHost(typeof(DocumentService), new Uri(address)))
-            {
-                // open host
-                host.Open();
-                Console.WriteLine("WCF Service {0} is opened", typeof(IDocumentService));
-                Console.ReadKey();
-            }
+            var uri = new Uri(GetAddressFromConfig());
+            var host = new ConfigurableServiceHost(typeof (DocumentService), uri);
+
+            // open host
+            host.Open();
+            Console.WriteLine("WCF Service {0} is opened", typeof (IDocumentService));
+            return host;
+        }
+
+        private static string GetAddressFromConfig()
+        {
+            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
+            return string.Format("http://localhost:{0}/DocumentService", port);
         }
     }
 }

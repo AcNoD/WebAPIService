@@ -12,14 +12,10 @@ namespace WebAPIService
 
         protected override void ApplyConfiguration()
         {
-            //base.ApplyConfiguration();
-
-
             var filemap = new ExeConfigurationFileMap
                 {
                     ExeConfigFilename = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
                 };
-
 
             var config = ConfigurationManager.OpenMappedExeConfiguration(filemap, ConfigurationUserLevel.None);
             var serviceModel = ServiceModelSectionGroup.GetSectionGroup(config);
