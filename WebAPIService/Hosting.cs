@@ -24,9 +24,17 @@ namespace WebAPIService
             using (var host = new ServiceHost(typeof(DocumentService), httpBaseAddress))
             {
                 // add endpoint
-                var ep = host.AddServiceEndpoint(typeof(IDocumentService), new WebHttpBinding(), string.Empty);
-                //var epB = new 
+                var ep = host.AddServiceEndpoint(typeof(IDocumentService), new WebHttpBinding(), string.Empty);                
                 ep.Behaviors.Add(new WebHttpBehavior());
+
+                /*var httpEp = new WebHttpEndpoint(ContractDescription.GetContract(typeof(IDocumentService)))
+                {
+                    Address = new EndpointAddress(httpBaseAddress),
+                    AutomaticFormatSelectionEnabled = true
+
+                };
+                host.AddServiceEndpoint(httpEp);*/
+
                 // create behavior
                 var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true };
                 
