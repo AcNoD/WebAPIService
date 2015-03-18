@@ -7,16 +7,18 @@ namespace WebAPIService
     [ServiceContract]
     interface IDocumentService
     {
-        [WebGet]
+        [WebGet(UriTemplate = "GetDocument/{id}")]
         [OperationContract]
-        Document GetDocument();
+        Document GetDocument(string id);
         
         [OperationContract]
-        //[WebInvoke(Method = "POST", BodyStyle=WebMessageBodyStyle.WrappedRequest, ResponseFormat = WebMessageFormat.Json)]
-        //[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Xml, BodyStyle = WebMessageBodyStyle.WrappedRequest)]
         long AddDocument(Document document);
 
+        [WebGet(UriTemplate = "GetData/{value}")]
         [OperationContract]
-        string AddSimple(string document);
+        string GetData(string value);
+
+        [OperationContract]
+        string PostData(string value);
     }
 }

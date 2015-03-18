@@ -1,6 +1,6 @@
 ﻿namespace WebAPIService.Test
 {
-    enum RequestMethodType
+    public enum RequestMethodType
     {
         GET,
         POST

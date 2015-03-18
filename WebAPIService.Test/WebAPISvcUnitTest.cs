@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
@@ -8,6 +9,7 @@ using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WebAPIService.Test
 {
@@ -15,108 +17,87 @@ namespace WebAPIService.Test
     public class WebApiSvcUnitTest
     {
         [TestMethod]
-        public void InvokeWebMethod_XML()
+        public void WCFComplexGet_ReturnXML()
         {
-            InvokeWebMethod(ResponseFormat.XML);
+            InvokeWebMethod("GetDocument/2", RequestMethodType.GET, ResponseFormat.XML);
         }
 
         [TestMethod]
-        public void InvokeWebMethod_JSON()
+        public void WCFComplexGet_ReturnJSON()
         {
-            InvokeWebMethod(ResponseFormat.JSON);
-        }
-
-        public void InvokeWebMethod(ResponseFormat responseFormat)
-        {            
-            var host = Hosting.WcfConfigurableSelfHost();
-
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            var address = string.Format("http://localhost:{0}/DocumentService/GetDocument", port);
-
-            Trace.WriteLine(WebInvoker.Invoke(address, RequestMethodType.GET, responseFormat));
-
-            host.Close();
+            InvokeWebMethod("GetDocument/1", RequestMethodType.GET, ResponseFormat.JSON);
         }
 
         [TestMethod]
-        public void TestAddDocumentToWCFEndpoint()
+        public void WCFSimpleGet_ReturnXML()
         {
-            var host = Hosting.WcfConfigurableSelfHost();
-
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            var address = string.Format("http://localhost:{0}/DocumentService/AddDocument", port);
-
-            var document = new Document
-                {
-                    Id = 1001,
-                    Name = "NewDocument",
-                    MyContent = "new test doc content"
-                };
-
-            var serializer = new JavaScriptSerializer();
-            var jsonString = "{\"document\":" + serializer.Serialize(document) + "}";
-
-            var response = WebInvoker.Invoke(address, RequestMethodType.POST, ResponseFormat.JSON, jsonString);
-            Trace.WriteLine("Web response: " + response);
-            Assert.AreEqual("1001", response);
-            host.Close();
+            InvokeWebMethod("GetData/New York", RequestMethodType.GET, ResponseFormat.XML);
         }
 
         [TestMethod]
-        public void TestAddDocumentToWCFEndpointXML()
+        public void WCFSimpleGet_ReturnJSON()
         {
-            var host = Hosting.WcfConfigurableSelfHost();
+            InvokeWebMethod("GetData/New York", RequestMethodType.GET, ResponseFormat.JSON);
+        }
 
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            var address = string.Format("http://localhost:{0}/DocumentService/AddDocument", port);
+        [TestMethod]
+        public void WCFSimplePost_ReturnXML()
+        {
+            InvokeWebMethod("PostData", RequestMethodType.POST, ResponseFormat.XML, "<PostData xmlns=\"http://tempuri.org/\"><value>Barcelona</value></PostData>");
+        }
 
-            var document = new Document
+        [TestMethod]
+        public void WCFSimplePost_ReturnJSON()
+        {
+            InvokeWebMethod("PostData", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\"Barcelona\"");
+        }
+
+        [TestMethod]
+        public void WCFComplexPost_ReturnJSON()
+        {
+            var document = new Document("Real Madrid", "Content of the document");
+            var jObj = new JObject();
+            jObj["document"] = JToken.FromObject(document);
+            InvokeWebMethod("AddDocument", RequestMethodType.POST, ResponseFormat.JSON, jObj.ToString());
+        }
+
+        [TestMethod]
+        public void WCFComplexPost_ReturnXML()
+        {
+            var document = new Document("Chelsea", "Content of the document");
+
+            const string ns = "http://tempuri.org/";
+
+            var dcSerializer = new DataContractSerializer(typeof(Document), "document", ns);
+            var raw = "";
+            using (var mStream = new MemoryStream())
             {
-                Id = 1001,
-                Name = "NewDocument",
-                MyContent = "new test doc content"
-            };
-
-            //var xmlString = SerializeToXml(document);
-            //var xmlString = "<AddDocument xmlns=\"http://tempuri.org/\"><Document xmlns=\"http://www.test.com/Docns\"><Id>1001</Id><Name>NewDocument</Name><Content>new test doc content</Content></Document></AddDocument>";
-            var xmlString = "<AddDocument xmlns=\"http://tempuri.org/\"><document xmlns=\"http://tempuri.org/\"><MyContent>newdsaf</MyContent><Name>NewDocument</Name><Id>1001</Id></document></AddDocument>";
-            Trace.WriteLine(xmlString);
-            var encoding = new ASCIIEncoding();
-            var data = encoding.GetBytes(xmlString);
-            var response = WebInvoker.InvokeByte(address, RequestMethodType.POST, ResponseFormat.XML, data);
-            Trace.WriteLine("Web response: " + response);
-            Assert.AreEqual("1001", response);
-            host.Close();
-        }
-
-        [TestMethod]
-        public void TestAddDocumentToWCFEndpointXML2()
-        {
-            var host = Hosting.WcfConfigurableSelfHost();
-
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            var address = string.Format("http://localhost:{0}/DocumentService/AddSimple", port);
-
-            var document = "same info";
-            var xmlString = SerializeToXml(document);
-            var response = WebInvoker.Invoke(address, RequestMethodType.POST, ResponseFormat.XML, "<document>wefwefwe</document>");
-            Trace.WriteLine("Web response: " + response);
-            Assert.AreEqual("1001", response);
-            host.Close();
-        }
-
-        private static byte[] ToByteArray<T>(T requestBody)
-        {
-            byte[] bytes;
-            using (var s = new MemoryStream())
-            {
-                var serializer = new XmlSerializer(typeof(T));
-                serializer.Serialize(s, requestBody);
-                bytes = s.ToArray();
+                dcSerializer.WriteObject(mStream, document);
+                raw = Encoding.UTF8.GetString(mStream.GetBuffer());
             }
-            return bytes;
+
+            var xmlDoc = new XmlDocument();
+            XmlNode rootNode = xmlDoc.CreateElement("AddDocument", ns);
+            rootNode.InnerXml = raw;
+            xmlDoc.AppendChild(rootNode);
+            InvokeWebMethod("AddDocument", RequestMethodType.POST, ResponseFormat.XML, xmlDoc.OuterXml);
         }
-        
+
+        private static string BuildUri(string postfix)
+        {
+            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
+            return string.Format("http://localhost:{0}/DocumentService/{1}", port, postfix);
+        }
+
+        public void InvokeWebMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat, string body = null)
+        {
+            using (var host = Hosting.WcfConfigurableSelfHost())
+            {
+                Trace.WriteLine(WebInvoker.Invoke(BuildUri(method), methodType, responseFormat, body));
+                host.Close();
+            }
+        }
+
         [TestMethod]
         public void Test()
         {
@@ -125,17 +106,6 @@ namespace WebAPIService.Test
             Trace.WriteLine(WebInvoker.Invoke("http://localhost:8080/api/documents", RequestMethodType.GET, ResponseFormat.JSON));
 
             host.CloseAsync().Wait();
-        }
-
-        private static string SerializeToXml<T>(T value)
-        {
-            var xmlserializer = new XmlSerializer(typeof(T));
-            var stringWriter = new StringWriter();
-            using (var writer = XmlWriter.Create(stringWriter))
-            {
-                xmlserializer.Serialize(writer, value);
-                return stringWriter.ToString();
-            }
         }
     }
 }
