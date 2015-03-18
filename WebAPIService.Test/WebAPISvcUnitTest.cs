@@ -19,37 +19,37 @@ namespace WebAPIService.Test
         [TestMethod]
         public void WCFComplexGet_ReturnXML()
         {
-            InvokeWebMethod("GetDocument/2", RequestMethodType.GET, ResponseFormat.XML);
+            InvokeWcfMethod("GetDocument/2", RequestMethodType.GET, ResponseFormat.XML);
         }
 
         [TestMethod]
         public void WCFComplexGet_ReturnJSON()
         {
-            InvokeWebMethod("GetDocument/1", RequestMethodType.GET, ResponseFormat.JSON);
+            InvokeWcfMethod("GetDocument/1", RequestMethodType.GET, ResponseFormat.JSON);
         }
 
         [TestMethod]
         public void WCFSimpleGet_ReturnXML()
         {
-            InvokeWebMethod("GetData/New York", RequestMethodType.GET, ResponseFormat.XML);
+            InvokeWcfMethod("GetData/New York", RequestMethodType.GET, ResponseFormat.XML);
         }
 
         [TestMethod]
         public void WCFSimpleGet_ReturnJSON()
         {
-            InvokeWebMethod("GetData/New York", RequestMethodType.GET, ResponseFormat.JSON);
+            InvokeWcfMethod("GetData/New York", RequestMethodType.GET, ResponseFormat.JSON);
         }
 
         [TestMethod]
         public void WCFSimplePost_ReturnXML()
         {
-            InvokeWebMethod("PostData", RequestMethodType.POST, ResponseFormat.XML, "<PostData xmlns=\"http://tempuri.org/\"><value>Barcelona</value></PostData>");
+            InvokeWcfMethod("PostData", RequestMethodType.POST, ResponseFormat.XML, "<PostData xmlns=\"http://tempuri.org/\"><value>Barcelona</value></PostData>");
         }
 
         [TestMethod]
         public void WCFSimplePost_ReturnJSON()
         {
-            InvokeWebMethod("PostData", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\"Barcelona\"");
+            InvokeWcfMethod("PostData", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\"Barcelona\"");
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace WebAPIService.Test
             var document = new Document("Real Madrid", "Content of the document");
             var jObj = new JObject();
             jObj["document"] = JToken.FromObject(document);
-            InvokeWebMethod("AddDocument", RequestMethodType.POST, ResponseFormat.JSON, jObj.ToString());
+            InvokeWcfMethod("AddDocument", RequestMethodType.POST, ResponseFormat.JSON, jObj.ToString());
         }
 
         [TestMethod]
@@ -80,7 +80,7 @@ namespace WebAPIService.Test
             XmlNode rootNode = xmlDoc.CreateElement("AddDocument", ns);
             rootNode.InnerXml = raw;
             xmlDoc.AppendChild(rootNode);
-            InvokeWebMethod("AddDocument", RequestMethodType.POST, ResponseFormat.XML, xmlDoc.OuterXml);
+            InvokeWcfMethod("AddDocument", RequestMethodType.POST, ResponseFormat.XML, xmlDoc.OuterXml);
         }
 
         private static string BuildUri(string postfix)
@@ -89,7 +89,7 @@ namespace WebAPIService.Test
             return string.Format("http://localhost:{0}/DocumentService/{1}", port, postfix);
         }
 
-        public void InvokeWebMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat, string body = null)
+        public void InvokeWcfMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat, string body = null)
         {
             using (var host = Hosting.WcfConfigurableSelfHost())
             {
@@ -98,14 +98,25 @@ namespace WebAPIService.Test
             }
         }
 
-        [TestMethod]
-        public void Test()
+        public void InvokeWebApiMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat)
         {
             var host = Hosting.WebApiSelfHost();
 
-            Trace.WriteLine(WebInvoker.Invoke("http://localhost:8080/api/documents", RequestMethodType.GET, ResponseFormat.JSON));
+            Trace.WriteLine(WebInvoker.Invoke(method, methodType, responseFormat));
 
             host.CloseAsync().Wait();
+        }
+
+        [TestMethod]
+        public void WebAPIComplexGet_ReturnXML()
+        {
+            InvokeWebApiMethod("http://localhost:8080/api/documents", RequestMethodType.GET, ResponseFormat.XML);
+        }
+
+        [TestMethod]
+        public void WebAPIComplexGet_ReturnJSON()
+        {
+            InvokeWebApiMethod("http://localhost:8080/api/documents", RequestMethodType.GET, ResponseFormat.JSON);
         }
     }
 }
