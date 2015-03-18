@@ -19,28 +19,26 @@ namespace WebAPIService.Test
             }
         }
 
-        private static string BuildUri(string postfix)
-        {
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            return string.Format("http://localhost:{0}/DocumentService/{1}", port, postfix);
-        }
-
         public void InvokeWcfMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat,
                                     string body = null)
         {
             using (var host = Hosting.WcfConfigurableSelfHost())
             {
-                WebInvoker.Invoke(BuildUri(method), methodType, responseFormat, body);
+                var port = WebConfigurationManager.AppSettings["wcfServicePort"];
+                var address = string.Format("http://localhost:{0}/DocumentService/{1}", port, method);
+                WebInvoker.Invoke(address, methodType, responseFormat, body);
                 host.Close();
             }
         }
 
-        public void InvokeWebApiMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat,
+        public void InvokeWebApiMethod(RequestMethodType methodType, ResponseFormat responseFormat,
                                        string body = null)
         {
             using (var host = Hosting.WebApiSelfHost())
             {
-                WebInvoker.Invoke(method, methodType, responseFormat, body);
+                var port = WebConfigurationManager.AppSettings["webAPIServicePort"];
+                var address = string.Format("http://localhost:{0}/api/documents", port);
+                WebInvoker.Invoke(address, methodType, responseFormat, body);
                 host.CloseAsync().Wait();
             }
         }
