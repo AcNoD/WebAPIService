@@ -1,11 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Web.Configuration;
-using System.Web.Script.Serialization;
-using System.Xml;
-using System.Xml.Serialization;
+﻿using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model;
 using Newtonsoft.Json;
@@ -14,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace WebAPIService.Test
 {
     [TestClass]
-    public class WebApiSvcUnitTest
+    public partial class WebApiSvcUnitTest
     {
         [TestMethod]
         public void WCFComplexGet_ReturnXML()
@@ -41,19 +34,19 @@ namespace WebAPIService.Test
         }
 
         [TestMethod]
-        public void WCFSimplePost_ReturnXML()
+        public void WCFSimplePost_SendXML()
         {
             InvokeWcfMethod("PostData", RequestMethodType.POST, ResponseFormat.XML, "<PostData xmlns=\"http://tempuri.org/\"><value>Barcelona</value></PostData>");
         }
 
         [TestMethod]
-        public void WCFSimplePost_ReturnJSON()
+        public void WCFSimplePost_SendJSON()
         {
             InvokeWcfMethod("PostData", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\"Barcelona\"");
         }
 
         [TestMethod]
-        public void WCFComplexPost_ReturnJSON()
+        public void WCFComplexPost_SendJSON()
         {
             var document = new Document("Real Madrid", "Content of the document");
             var jObj = new JObject();
@@ -62,49 +55,14 @@ namespace WebAPIService.Test
         }
 
         [TestMethod]
-        public void WCFComplexPost_ReturnXML()
+        public void WCFComplexPost_SendXML()
         {
             var document = new Document("Chelsea", "Content of the document");
-
-            const string ns = "http://tempuri.org/";
-
-            var dcSerializer = new DataContractSerializer(typeof(Document), "document", ns);
-            var raw = "";
-            using (var mStream = new MemoryStream())
-            {
-                dcSerializer.WriteObject(mStream, document);
-                raw = Encoding.UTF8.GetString(mStream.GetBuffer());
-            }
-
             var xmlDoc = new XmlDocument();
-            XmlNode rootNode = xmlDoc.CreateElement("AddDocument", ns);
-            rootNode.InnerXml = raw;
+            XmlNode rootNode = xmlDoc.CreateElement("AddDocument", Ns);
+            rootNode.InnerXml = SerializeToXml(document, "document", Ns);
             xmlDoc.AppendChild(rootNode);
             InvokeWcfMethod("AddDocument", RequestMethodType.POST, ResponseFormat.XML, xmlDoc.OuterXml);
-        }
-
-        private static string BuildUri(string postfix)
-        {
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            return string.Format("http://localhost:{0}/DocumentService/{1}", port, postfix);
-        }
-
-        public void InvokeWcfMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat, string body = null)
-        {
-            using (var host = Hosting.WcfConfigurableSelfHost())
-            {
-                Trace.WriteLine(WebInvoker.Invoke(BuildUri(method), methodType, responseFormat, body));
-                host.Close();
-            }
-        }
-
-        public void InvokeWebApiMethod(string method, RequestMethodType methodType, ResponseFormat responseFormat)
-        {
-            var host = Hosting.WebApiSelfHost();
-
-            Trace.WriteLine(WebInvoker.Invoke(method, methodType, responseFormat));
-
-            host.CloseAsync().Wait();
         }
 
         [TestMethod]
@@ -117,6 +75,22 @@ namespace WebAPIService.Test
         public void WebAPIComplexGet_ReturnJSON()
         {
             InvokeWebApiMethod("http://localhost:8080/api/documents", RequestMethodType.GET, ResponseFormat.JSON);
+        }
+
+        [TestMethod]
+        public void WebAPIComplexPost_SendXML()
+        {
+            var document = new Document("Chelsea", "Content of the document");
+
+            
+            InvokeWebApiMethod("http://localhost:8080/api/documents", RequestMethodType.POST, ResponseFormat.XML, SerializeToXml(document, "Document", Ns));
+        }
+
+        [TestMethod]
+        public void WebAPIComplexPost_SendJSON()
+        {
+            var document = new Document("Real Madrid", "Content of the document");
+            InvokeWebApiMethod("http://localhost:8080/api/documents", RequestMethodType.POST, ResponseFormat.JSON, JsonConvert.SerializeObject(document));
         }
     }
 }

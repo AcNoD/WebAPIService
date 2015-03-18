@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Net;
 
 namespace WebAPIService.Test
@@ -7,6 +8,10 @@ namespace WebAPIService.Test
     {
         public static string Invoke(string address, RequestMethodType method, ResponseFormat fromat, string postContent = null)
         {
+            Trace.WriteLine("Address: " + address);
+            Trace.WriteLine("Method: " + method);
+            if (postContent != null)
+                Trace.WriteLine("Body: " + postContent);
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(address);
             httpWebRequest.ContentType = GetContentType(fromat);
             httpWebRequest.Method = method.ToString();
@@ -24,6 +29,7 @@ namespace WebAPIService.Test
             {
                 responseText = streamReader.ReadToEnd();
             }
+            Trace.WriteLine("Response: " + responseText);
             return responseText;
         }
 

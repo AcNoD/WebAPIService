@@ -17,5 +17,10 @@ namespace WebAPIService.WebAPI
         {
             return _documents;
         }
+
+        public long AddDocument([FromBody]Document document)
+        {
+            return 1;
+        }
     }
 }

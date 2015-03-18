@@ -77,6 +77,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Helpers.cs" />
     <Compile Include="RequestMethodType.cs" />
     <Compile Include="ResponseFormat.cs" />
     <Compile Include="WebAPISvcUnitTest.cs" />
