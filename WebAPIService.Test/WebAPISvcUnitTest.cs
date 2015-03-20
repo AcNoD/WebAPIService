@@ -10,6 +10,15 @@ namespace WebAPIService.Test
     public partial class WebApiSvcUnitTest
     {
         [TestMethod]
+        public void SendToMSMQ()
+        {
+            const string city = "Barcelona";
+            InvokeWcfMethod("SendToQueue", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\""+city+"\"");
+            var value = Msmq.ReceiveMessage();
+            Assert.AreEqual(city, value);
+        }
+
+        [TestMethod]
         public void WCFComplexGet_ReturnXML()
         {
             InvokeWcfMethod("GetDocument/2", RequestMethodType.GET, ResponseFormat.XML);

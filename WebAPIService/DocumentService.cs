@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using Model;
 using NLog;
 
@@ -34,6 +31,12 @@ namespace WebAPIService
         {
             Logger.Trace("PostData, value={0}", value);
             return "You have sent " + value;
+        }
+
+        public void SendToQueue(string value)
+        {
+            Logger.Trace("SendToQueue, value={0}", value);
+            Msmq.SendMessage(value);
         }
     }
 }

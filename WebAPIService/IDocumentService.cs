@@ -20,5 +20,8 @@ namespace WebAPIService
 
         [OperationContract]
         string PostData(string value);
+
+        [OperationContract]
+        void SendToQueue(string value);
     }
 }
