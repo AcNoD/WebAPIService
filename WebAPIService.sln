@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPIService", "WebAPIService\WebAPIService.csproj", "{062CF1AE-17ED-4BBB-8D9F-EF99245C29E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{35B2B39E-D049-44CD-B561-DF97E2DEABEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPIService.Test", "WebAPIService.Test\WebAPIService.Test.csproj", "{568EC5C8-C20A-47F5-B1F2-BB7AE2344E83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{C44CA434-2018-495B-BB14-72E4A36F3533}"
+	ProjectSection(SolutionItems) = preProject
+		dependencies\NLog\net40\NLog.dll = dependencies\NLog\net40\NLog.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

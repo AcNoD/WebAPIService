@@ -6,21 +6,14 @@ namespace WebAPIService.WebAPI
 {
     public class DocumentsController : ApiController
     {
-        readonly Document[] _documents = new []  
-        {  
-            new Document { Id = 1, Name = "DocOne", Content = "ContentOne"},  
-            new Document { Id = 2, Name = "DocTwo", Content = "ContentTwo" },  
-            new Document { Id = 3, Name = "DocThree", Content = "ContentThree" }  
-        };
-
         public IEnumerable<Document> GetAllDocuments()
         {
-            return _documents;
+            return DocumentStorage.Storage.GetAllDocumets();
         }
 
         public long AddDocument([FromBody]Document document)
         {
-            return 1;
+            return DocumentStorage.Storage.AddDocument(document);
         }
     }
 }

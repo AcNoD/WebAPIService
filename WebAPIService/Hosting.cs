@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ServiceModel;
-using System.ServiceModel.Description;
 using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Http.SelfHost;
+using System.Web.Http.ExceptionHandling;
+using NLog;
+using WebAPIService.WebAPI;
 
 namespace WebAPIService
 {
@@ -12,6 +14,8 @@ namespace WebAPIService
     /// </summary>
     public class Hosting
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public static HttpSelfHostServer WebApiSelfHost()
         {
             var config = new HttpSelfHostConfiguration("http://localhost:8080");
@@ -19,40 +23,9 @@ namespace WebAPIService
             config.Routes.MapHttpRoute("API Default", "api/{controller}/{id}", new { id = RouteParameter.Optional });
 
             var host = new HttpSelfHostServer(config);
-
+            host.Configuration.Services.Add(typeof(IExceptionLogger), new UnhandledExceptionLogger(Logger));
             host.OpenAsync().Wait();
 
-            return host;
-        }
-
-        public static ServiceHost WcfSelfHost()
-        {
-            // create host
-            var uri = new Uri(GetAddressFromConfig());
-            var host = new ServiceHost(typeof(DocumentService), uri);
-
-            // add endpoint
-            var ep = host.AddServiceEndpoint(typeof (IDocumentService), new WebHttpBinding(), string.Empty);
-            ep.Behaviors.Add(new WebHttpBehavior());
-
-            /*var httpEp = new WebHttpEndpoint(ContractDescription.GetContract(typeof(IDocumentService)))
-                {
-                    Address = new EndpointAddress(httpBaseAddress),
-                    AutomaticFormatSelectionEnabled = true
-
-                };
-                host.AddServiceEndpoint(httpEp);*/
-
-            // create behavior
-            var behavior = new ServiceMetadataBehavior {HttpGetEnabled = true};
-
-            // add behavior to host
-            host.Description.Behaviors.Add(behavior);
-
-            // open host
-            host.Open();
-
-            Console.WriteLine("WCF Service {0} is opened", typeof (IDocumentService));
             return host;
         }
 
@@ -60,12 +33,36 @@ namespace WebAPIService
         {
             // create host
             var uri = new Uri(GetAddressFromConfig());
-            var host = new ConfigurableServiceHost(typeof (DocumentService), uri);
-
+            var host = new ConfigurableServiceHost(typeof (DocumentService), uri);            
+            host.Opened += host_Opened;
+            host.Closed += host_Closed;
+            host.Faulted += host_Faulted;
+            host.UnknownMessageReceived += host_UnknownMessageReceived;
             // open host
+            host.Description.Behaviors.Insert(0, new GlobalExceptionHandlerBehavior());
             host.Open();
-            Console.WriteLine("WCF Service {0} is opened", typeof (IDocumentService));
+            
             return host;
+        }
+
+        static void host_UnknownMessageReceived(object sender, UnknownMessageReceivedEventArgs e)
+        {
+            Logger.Error("Unknown message has been reseived. EventArgs Message {0}", e.Message);
+        }
+
+        static void host_Closed(object sender, EventArgs e)
+        {
+            Logger.Info("WCF Service {0} is closed", typeof(IDocumentService));
+        }
+
+        static void host_Opened(object sender, EventArgs e)
+        {
+            Logger.Info("WCF Service {0} is opened", typeof(IDocumentService));
+        }
+
+        static void host_Faulted(object sender, EventArgs e)
+        {
+            Logger.Fatal("WCF host has faulted " + e);
         }
 
         private static string GetAddressFromConfig()
