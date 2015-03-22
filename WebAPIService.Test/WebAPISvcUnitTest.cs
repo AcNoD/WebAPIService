@@ -10,20 +10,7 @@ namespace WebAPIService.Test
 {
     [TestClass]
     public partial class WebApiSvcUnitTest
-    {
-        /// <summary>
-        /// Sends message to WCF service which put it to the queue,
-        /// afterwards reads message from that queue
-        /// </summary>
-        [TestMethod]
-        public void SendToMSMQ()
-        {
-            const string value = "Barcelona";
-            InvokeWcfMethod("SendToQueue", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\"" + value + "\"");
-            var msg = Msmq.ReceiveMessage();
-            Assert.AreEqual(value, msg);
-        }
-
+    {       
         /// <summary>
         /// WCF GET
         /// OUT: uri args
@@ -239,6 +226,19 @@ namespace WebAPIService.Test
             var resultedDoc = DocumentStorage.Storage.GetDocument(id);
             Assert.AreEqual(document.Name, resultedDoc.Name);
             Assert.AreEqual(document.Content, resultedDoc.Content);
+        }
+
+        /// <summary>
+        /// Sends message to WCF service which put it to the queue,
+        /// afterwards reads message from that queue
+        /// </summary>
+        [TestMethod]
+        public void SendToMSMQ()
+        {
+            const string value = "Barcelona";
+            InvokeWcfMethod("SendToQueue", RequestMethodType.POST, ResponseFormat.JSON, "{\"value\":\"" + value + "\"");
+            var msg = Msmq.ReceiveMessage();
+            Assert.AreEqual(value, msg);
         }
     }
 }
