@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Messaging;
+using System.Runtime.Serialization;
 using System.Web.Configuration;
 
 namespace WebAPIService
@@ -25,7 +27,9 @@ namespace WebAPIService
         {
             var queue = GetQueue();
             var message = queue.Receive();
-            return message != null ? message.Body.ToString() : string.Empty;
+            if (message == null) return string.Empty;
+            message.Formatter = new XmlMessageFormatter(new[] { "System.String,mscorlib" });
+            return message.Body.ToString();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model;
 
@@ -7,12 +8,13 @@ namespace WebAPIService
     public class DocumentStorage
     {
         public static DocumentStorage Storage = new DocumentStorage();
+        private static object _sync = new object();
 
-        private readonly List<Document> _documets; 
+        private readonly List<Document> _documents; 
 
         public DocumentStorage()
         {
-            _documets = new List<Document>
+            _documents = new List<Document>
             {
                 new Document {Id = 1, Name = "Doc1", Content = "the doc content 1"},
                 new Document {Id = 2, Name = "Doc2", Content = "the doc content 2"},
@@ -22,20 +24,31 @@ namespace WebAPIService
 
         public List<Document> GetAllDocumets()
         {
-            return _documets;
+            return _documents;
         }
 
         public Document GetDocument(long id)
         {
-            return _documets.SingleOrDefault(x => x.Id == id);
+            return _documents.SingleOrDefault(x => x.Id == id);
         }
 
         public long AddDocument(Document document)
         {
-            var maxId = _documets.Max(x => x.Id);
-            document.Id = ++maxId;
-            _documets.Add(document);
-            return document.Id;
+            lock (_sync)
+            {
+                var maxId = _documents.Max(x => x.Id);
+                document.Id = ++maxId;
+                _documents.Add(document);
+                return document.Id;
+            }
+        }
+
+        public long GetMaxId()
+        {
+            lock (_sync)
+            {
+                return _documents.Max(x => x.Id);
+            }
         }
     }
 }
