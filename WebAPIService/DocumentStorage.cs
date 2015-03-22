@@ -1,17 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Model;
 
 namespace WebAPIService
 {
+    /// <summary>
+    /// Document storage
+    /// </summary>
     public class DocumentStorage
     {
+        /// <summary>
+        /// Storage instance
+        /// </summary>
         public static DocumentStorage Storage = new DocumentStorage();
-        private static object _sync = new object();
 
+        /// <summary>
+        /// Syncronization oject
+        /// </summary>
+        private static readonly object Sync = new object();
+        
+        /// <summary>
+        /// Internal documents collection
+        /// </summary>
         private readonly List<Document> _documents; 
 
+        /// <summary>
+        /// Ctor
+        /// </summary>
         public DocumentStorage()
         {
             _documents = new List<Document>
@@ -22,19 +37,33 @@ namespace WebAPIService
             };
         }
 
+        /// <summary>
+        /// Returns all documents form storage
+        /// </summary>
+        /// <returns>Documents collection</returns>
         public List<Document> GetAllDocumets()
         {
             return _documents;
         }
 
+        /// <summary>
+        /// Gets documetns by document identifier
+        /// </summary>
+        /// <param name="id">Document identifier</param>
+        /// <returns>Document</returns>
         public Document GetDocument(long id)
         {
             return _documents.SingleOrDefault(x => x.Id == id);
         }
 
+        /// <summary>
+        /// Adds new document to storage
+        /// </summary>
+        /// <param name="document">New document</param>
+        /// <returns>Identifier of saved document</returns>
         public long AddDocument(Document document)
         {
-            lock (_sync)
+            lock (Sync)
             {
                 var maxId = _documents.Max(x => x.Id);
                 document.Id = ++maxId;
@@ -43,9 +72,13 @@ namespace WebAPIService
             }
         }
 
+        /// <summary>
+        /// Gets max identifier from documents collection
+        /// </summary>
+        /// <returns>Max identifier</returns>
         public long GetMaxId()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 return _documents.Max(x => x.Id);
             }

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.SelfHost;
 
 namespace WebAPIService
 {
+    /// <summary>
+    /// App entry point
+    /// </summary>
     class EntryPoint
     {
         static void Main()

@@ -3,6 +3,9 @@ using System.ServiceModel.Dispatcher;
 
 namespace WebAPIService
 {
+    /// <summary>
+    /// Global Exception Handler Behavior for WCF Service
+    /// </summary>
     public class GlobalExceptionHandlerBehavior : IServiceBehavior
     {
         public void AddBindingParameters(ServiceDescription serviceDescription, System.ServiceModel.ServiceHostBase serviceHostBase, System.Collections.ObjectModel.Collection<ServiceEndpoint> endpoints, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)

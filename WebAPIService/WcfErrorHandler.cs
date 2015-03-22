@@ -6,6 +6,9 @@ using NLog;
 
 namespace WebAPIService
 {
+    /// <summary>
+    /// Wcf Error Handler. Handles errors and logs it
+    /// </summary>
     public class WcfErrorHandler : IErrorHandler
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

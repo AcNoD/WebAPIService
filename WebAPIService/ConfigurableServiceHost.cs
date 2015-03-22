@@ -5,11 +5,17 @@ using System.ServiceModel.Configuration;
 
 namespace WebAPIService
 {
+    /// <summary>
+    /// Service host with config loading
+    /// </summary>
     class ConfigurableServiceHost : ServiceHost
     {
         public ConfigurableServiceHost(Type serviceType, params Uri[] baseAddresses)
         : base(serviceType, baseAddresses) { }
 
+        /// <summary>
+        /// Applies configurations from config to service host
+        /// </summary>
         protected override void ApplyConfiguration()
         {
             var filemap = new ExeConfigurationFileMap

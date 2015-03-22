@@ -14,23 +14,34 @@ namespace WebAPIService
     /// </summary>
     public class Hosting
     {
+        /// <summary>
+        /// Logger
+        /// </summary>
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// Creates WebApi Self Host
+        /// </summary>
+        /// <returns>WebApi Self Host</returns>
         public static HttpSelfHostServer WebApiSelfHost()
         {
+            // create host
             var port = WebConfigurationManager.AppSettings["webAPIServicePort"];
             var address = string.Format("http://localhost:{0}", port);
             var config = new HttpSelfHostConfiguration(address);
-
             config.Routes.MapHttpRoute("API Default", "api/{controller}/{id}", new { id = RouteParameter.Optional });
-
             var host = new HttpSelfHostServer(config);
             host.Configuration.Services.Add(typeof(IExceptionLogger), new UnhandledExceptionLogger(Logger));
+            // open host
             host.OpenAsync().Wait();
 
             return host;
         }
 
+        /// <summary>
+        /// Creates Wcf Self Host
+        /// </summary>
+        /// <returns>Wcf Self Host</returns>
         public static ServiceHost WcfConfigurableSelfHost()
         {
             var port = WebConfigurationManager.AppSettings["wcfServicePort"];
