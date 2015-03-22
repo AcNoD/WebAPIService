@@ -18,7 +18,9 @@ namespace WebAPIService
 
         public static HttpSelfHostServer WebApiSelfHost()
         {
-            var config = new HttpSelfHostConfiguration("http://localhost:8080");
+            var port = WebConfigurationManager.AppSettings["webAPIServicePort"];
+            var address = string.Format("http://localhost:{0}", port);
+            var config = new HttpSelfHostConfiguration(address);
 
             config.Routes.MapHttpRoute("API Default", "api/{controller}/{id}", new { id = RouteParameter.Optional });
 
@@ -31,8 +33,10 @@ namespace WebAPIService
 
         public static ServiceHost WcfConfigurableSelfHost()
         {
+            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
+            var address = string.Format("http://localhost:{0}/DocumentService", port);
             // create host
-            var uri = new Uri(GetAddressFromConfig());
+            var uri = new Uri(address);
             var host = new ConfigurableServiceHost(typeof (DocumentService), uri);            
             host.Opened += host_Opened;
             host.Closed += host_Closed;
@@ -63,12 +67,6 @@ namespace WebAPIService
         static void host_Faulted(object sender, EventArgs e)
         {
             Logger.Fatal("WCF host has faulted " + e);
-        }
-
-        private static string GetAddressFromConfig()
-        {
-            var port = WebConfigurationManager.AppSettings["wcfServicePort"];
-            return string.Format("http://localhost:{0}/DocumentService", port);
         }
     }
 }
